@@ -98,7 +98,7 @@ while(1):
 cv2.destroyAllWindows()
 
 
-#############################   Threshold Window Trackbar    #############################
+#############################   Colour Space Split Function    #############################
 
 # img = cv2.imread('road/warp.jpg')
 # cv2.imshow("road",img)
