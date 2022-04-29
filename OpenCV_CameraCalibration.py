@@ -52,7 +52,7 @@ dst= cv2.undistort(img, cameraMatrix, dist, None, newCameraMatrix)
 #crop the image:
 x, y, w, h = roi
 dst=dst[y:y+h, x:x+w]
-cv2.imshow('road/Undistort.jpg', dst)
+# cv2.imshow('road/Undistort.jpg', dst)
 cv2.imwrite('road/Undistort.jpg', dst)
 # #Undistort with remapping:
 mapx, mapy = cv2.initUndistortRectifyMap(cameraMatrix, dist, None, newCameraMatrix, (w,h), 5) 
@@ -60,7 +60,7 @@ dst = cv2.remap(img, mapx, mapy, cv2.INTER_LINEAR)
 #crop the image:
 x, y, w, h=roi
 dst=dst[y:y+h, x:x+w]
-cv2.imshow('road/Remap.jpg', dst)
+# cv2.imshow('road/Remap.jpg', dst)
 cv2.imwrite('road/UndistortRemap.jpg', dst)
 
 #Error reprojection 
@@ -85,7 +85,7 @@ while (cap.isOpened()):
     x, y, w, h=roi
     dst=dst[y:y+h, x:x-200]
     cv2.imshow("undistort video capture", dst)
-    if cv2.waitKey(20) & 0xFF == ord('q'):
+    if cv2.waitKey(25) & 0xFF == ord('q'):
         break
 cap.release()
 cv2.destroyAllWindows

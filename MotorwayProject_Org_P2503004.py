@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 
 
+
 #############################   Find chessboard size   #############################  
 chessboardSize=(9,6) # Specified chessboard size with number of corners both with width and height.
 frameSize= (720, 1280) # Pixel camera frame size in the image for camera calibration.
@@ -20,7 +21,6 @@ objp[:,:2] = np.mgrid[0:chessboardSize[0], 0:chessboardSize[1]].T.reshape(-1,2)
 objpoints = [] # 3d point in real world space. It is needed to project that down to 2d points to find the relation between this two dimentions.
 imgpoints = [] # 2d points in image plane. This camera matrix calibration will be used to decrease the camera lens distortion.
 images = glob.glob('chessboard/*.jpg') #All images in this folder with the chessboard and .jpg are going to be stored in this variable.
-
 #For loop operation is to run through the stored in the variable images and make operations and store the image and object points in order to undistored the images.
 for fname in images:
     # print(fname) #printing all eligible images in particular order.
@@ -68,20 +68,22 @@ def undistort(frame, cameraMatrix, dist):
     dst = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
     x, y, w, h=roi
     dst=dst[y:y+h, x:x+w]
+    # cv2.imshow('dst', dst)
     return dst
 #############################   WARP PERSPECTIVE   #############################  
 def warpimage(frame):
     pt1 = np.float32([
-        (565,380),    
-        (750,380), 
-        (160,530),  
-        (1140,530)
+        (565,380),    #1
+        (750,380),    #2
+        (160,530),    #3
+        (1140,530)    #4
     ])
     height, width = 360,350
     pt2 = np.float32([[0,0], [width,0], [0, height], [width,height]])
     mtx = cv2.getPerspectiveTransform(pt1,pt2)
     wraped=cv2.warpPerspective(frame, mtx, (width, height))
-    return wraped
+    cv2.imshow('wraped', wraped)
+    return wraped  
 #############################   VIEWBOX   ############################# 
 def frame_polyfit(frame):
     frame_copy = np.copy(frame)
@@ -100,21 +102,21 @@ def treshold_parameters(wraped):
     # cv2.imshow("R chanell", R_binary)
 
     hsv= cv2.cvtColor(wraped, cv2.COLOR_BGR2HSV)
-    hsv_lower = np.array([0,0,180])
+    hsv_lower = np.array([0,0,170])
     hsv_upper = np.array([255, 40, 220])
     hsv_mask = cv2.inRange(hsv, hsv_lower, hsv_upper)
     hsv_res = cv2.bitwise_and(wraped, wraped, mask= hsv_mask)
     # cv2.imshow("HSV", hsv_res)
 
     hls = cv2.cvtColor(wraped, cv2.COLOR_RGB2HLS)
-    hls_lower = np.array([0,0,180])
+    hls_lower = np.array([0,170,0])
     hls_upper = np.array([255, 255, 255])
     hls_mask = cv2.inRange(hls, hls_lower, hls_upper)
     hls_res = cv2.bitwise_and(wraped, wraped, mask= hls_mask)
     # cv2.imshow("HLS", hls_res)
 
     combined=np.asarray(hls_res + hsv_res +  R_res, dtype=np.uint8)
-    # cv2.imshow("Treshold", combined)
+    # cv2.imshow("Treshold_combined", combined)
     return combined
 
 
@@ -126,7 +128,7 @@ def slighting_window(combined):
     midpoint=dtype(hist.shape[0]/2)
     leftx_base=np.argmax(hist[:midpoint]) - midpoint
     rightx_base = np.argmax(hist[midpoint:]) 
-
+    
     # print(leftx_base)
     # print(midpoint)
     # print(rightx_base)
@@ -185,6 +187,9 @@ def slighting_window(combined):
     left_fitx = left_fit[0]*ploty**2 + left_fit[1]*ploty + left_fit[2]
     right_fitx = right_fit[0]*ploty**2 + right_fit[1]*ploty + right_fit[2]
 
+    # print(left_fitx)
+    # print(right_fitx)
+
     # Generate black image and colour lane lines
     out_combined[nonzeroy[left_lane_inds], nonzerox[left_lane_inds]] = [1, 0, 0]
     out_combined[nonzeroy[right_lane_inds], nonzerox[right_lane_inds]] = [0, 0, 1]
@@ -195,19 +200,42 @@ def slighting_window(combined):
     cv2.polylines(out_combined, [right], False, (255,255,1), thickness=5)
     cv2.polylines(out_combined, [left], False, (255,255,1), thickness=5)
 
-    # cv2.imshow("sliding widnow", out_combined)
+    # Drawing the pathway between detected lanes in sliding windows
+    final_image=np.copy(combined)
+    pts_left = np.array([np.transpose(np.vstack([left_fitx, ploty]))])
+    pts_right = np.array([np.flipud(np.transpose(np.vstack([right_fitx, ploty])))])
+    pts = np.hstack((pts_left, pts_right))
+    cv2.fillPoly(final_image, np.int_([pts]), (0,255, 0))
+    cv2.polylines(final_image, np.int32([pts_left]), False, color=(255,255,1), thickness=25)
+    cv2.polylines(final_image, np.int32([pts_right]), False, color=(255,255,1), thickness=25)
+    # cv2.imshow("Pathway", final_image)
+
+    # Unwarping the perspective and applying the drawing of pathway on the video capture
+    pt1 = np.float32([
+        (555,450),    
+        (1500,450), 
+        (-2800,1800),  
+        (9500,1000)
+    ])
+    height, width = 720, 1280
+    pt2 = np.float32([[0,0], [width,0], [0, height], [width,height]])
+    mtx = cv2.getPerspectiveTransform(pt2,pt1)
+    unwraped=cv2.warpPerspective(final_image, mtx, (width, height))
+    # cv2.imshow("Pathway1", unwraped)
+    result=cv2.addWeighted(frame,1,unwraped,0.5,0)
+    cv2.imshow("result", result)
+    # plt.plot(out_combined)
     # plt.plot(hist)
     # plt.show()
+  
     return out_combined
 
-#############################   OPTIMATIZATION    #############################
-
-
 #############################   CODE RELEASE    ############################# 
-# cap = cv2.VideoCapture("video/motorway_edge.mp4")
+cap = cv2.VideoCapture("video/motorway_edge.mp4")
+# cap = cv2.VideoCapture("video/motorway_cut.mp4")
 # cap = cv2.VideoCapture("video/motorway_long.mp4")
-cap = cv2.VideoCapture("video/motorway_cut.mp4")
 # cap = cv2.VideoCapture("video/motorway.mp4")
+
 while (cap.isOpened()):
     ret, frame = cap.read()
     undistort_video = undistort(frame, cameraMatrix, dist)
@@ -215,8 +243,10 @@ while (cap.isOpened()):
     bird_eye= warpimage(undistort_video)
     treshold_birdeye = treshold_parameters(bird_eye)
     line_detection = slighting_window(treshold_birdeye)
+    # unwarp=unwarpimage(frame)
 
-    cv2.imshow("Video", polifit_birdeye_section)
+    # cv2.imshow("unwarp", unwarp)
+    # cv2.imshow("Video", polifit_birdeye_section)
     cv2.imshow("Sliding windows", line_detection)
     cv2.imshow("Treshold", treshold_birdeye)
     if cv2.waitKey(20) & 0xFF == ord('q'):

@@ -36,8 +36,6 @@ def average_slope_intercept(image, lines):
                 right_fit.append((slope, intercept))
     left_fit_average = np.average(left_fit, axis=0)
     right_fit_average = np.average(right_fit, axis=0)
-    # print(left_fit_average, 'left')
-    # print(right_fit_average, 'right')
     left_line = make_coordinates(image, left_fit_average)
     right_line = make_coordinates(image, right_fit_average)
     return np.array([left_line, right_line])
@@ -47,7 +45,7 @@ def lines_function(image, pipeline):
     if pipeline is not None:
         for line in pipeline:
             x1, y1, x2, y2 =line.reshape(4)
-            cv2.line(detecting_line, (int(x1), int(y1)), (int(x2), int(y2)), (255,1,255), 10)
+            cv2.line(detecting_line, (int(x1), int(y1)), (int(x2), int(y2)), (255,255,0), 10)
     return detecting_line
 
 def function_of_intertest(image):
@@ -62,7 +60,7 @@ def function_of_intertest(image):
     masked_image= cv2.bitwise_and(image, mask) 
     return masked_image
 
-# img =cv2.imread("road/village.jpg")
+# img =cv2.imread("road/road.jpg")
 # road_image = np.copy(img )
 # canny_output=canny_function(road_image)
 # section_of_interest = function_of_intertest(canny_output)
@@ -70,15 +68,15 @@ def function_of_intertest(image):
 # average_pipeline = average_slope_intercept(road_image, pipeline)
 # pipeline_image=lines_function(road_image,average_pipeline)
 # output_road_image= cv2.addWeighted(road_image, 0.8, pipeline_image, 1, 1)
-# cv2.imshow("Output1",output_road_image)
-# cv2.waitKey(0)
+# # cv2.imshow("Output1",output_road_image)
+# # cv2.waitKey(0)
 # plt.imshow(img)
 # plt.show() 
 
-video=cv2.VideoCapture("video/countryside_long.mp4")
+# video=cv2.VideoCapture("video/countryside_long.mp4")
 # video=cv2.VideoCapture("video/countryside_cut.mp4")
-# video=cv2.VideoCapture("video/countryside_cut1.mp4")
-# video=cv2.VideoCapture("video/countryside_road.mp4")
+video=cv2.VideoCapture("video/countryside_road.mp4")
+# video = cv2.VideoCapture("video/motorway_edge.mp4")
 
 
 while (video.isOpened()):
@@ -88,7 +86,7 @@ while (video.isOpened()):
     pipeline= cv2.HoughLinesP(section_of_interest, 4, np.pi/180, 90, np.array([]), minLineLength=60, maxLineGap=15)
     average_pipeline = average_slope_intercept(frame, pipeline)
     pipeline_image=lines_function(frame,average_pipeline)
-    output_road_image= cv2.addWeighted(frame, 0.6, pipeline_image, 1,1)
+    output_road_image= cv2.addWeighted(frame, 0.8, pipeline_image, 1,1)
     cv2.imshow("output",output_road_image)
     # cv2.imshow("output",function_of_intertest(canny_output))
     if cv2.waitKey(20) & 0xFF == ord('q'):
