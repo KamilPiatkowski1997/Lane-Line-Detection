@@ -24,7 +24,9 @@
 # cv2.imwrite('road/mask.jpg', mask)
 # cv2.imshow('result', result)
 # cv2.waitKey()
+# cv2.destroyAllWindows()
 
+#############################   Threshold Window Trackbar    #############################
 import cv2
 import sys
 import numpy as np
@@ -93,6 +95,10 @@ while(1):
     if cv2.waitKey(waitTime) & 0xFF == ord('q'):
         cv2.imwrite('road/thresholdwarp.jpg', mask)
         break
+cv2.destroyAllWindows()
+
+
+#############################   Threshold Window Trackbar    #############################
 
 # img = cv2.imread('road/warp.jpg')
 # cv2.imshow("road",img)
@@ -111,8 +117,5 @@ while(1):
 # print(g.shape)
 # print(r.shape)
 
-# cv2.waitKey()
-
-
- 
-cv2.destroyAllWindows()
+# cv2.waitKey() 
+# cv2.destroyAllWindows()
