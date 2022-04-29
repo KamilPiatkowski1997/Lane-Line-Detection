@@ -3,8 +3,8 @@ import cv2
 import numpy
 import matplotlib.pyplot as plt
 # 
-# img = cv2.imread("road/Undistort.jpg")
-img = cv2.imread("road/UndistortRemap.jpg")
+img = cv2.imread("road/Undistort.jpg")
+# img = cv2.imread("road/UndistortRemap.jpg")
 pt1 = numpy.float32([ (600,385),(710,385),(290,530),(960,530)])
 height, width = 360,350
 pt2 = numpy.float32([[0,0], [width,0], [0, height], [width,height]])

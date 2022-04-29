@@ -79,8 +79,10 @@ left = np.asarray(tuple(zip(left_fitx, ploty)), np.int32)
 cv2.polylines(out_combined, [right], False, (1,1,255), thickness=5)
 cv2.polylines(out_combined, [left], False, (1,1,255), thickness=5)
 
+
 cv2.imshow("img", combined)
 cv2.imshow("out img", out_combined)
+cv2.imwrite("road/slidingwindow.jpg",out_combined)
 plt.plot(hist)
 plt.show()
 

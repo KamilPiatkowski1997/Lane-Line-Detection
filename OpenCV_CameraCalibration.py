@@ -44,7 +44,7 @@ print("\nTranslation Vectors: \n", tvecs_average)
 
 #############################   Undistorting of the image  ############################# 
 
-img=cv2.imread("road/road1.jpg")
+img=cv2.imread("road/road.jpg")
 h, w= img.shape[:2] 
 newCameraMatrix, roi = cv2.getOptimalNewCameraMatrix(cameraMatrix, dist, (w,h), 1, (w,h)) 
 #Undistort:
@@ -77,7 +77,10 @@ print("\n\n\n")
 #     undistort = cv2.undistort(img, cameraMatrix, dist, None, newCameraMatrix)
 #     return undistort
 
-cap = cv2.VideoCapture("video/motorway_long.mp4")
+cap = cv2.VideoCapture("video/motorway_edge.mp4")
+# cap = cv2.VideoCapture("video/motorway_cut.mp4")
+# cap = cv2.VideoCapture("video/motorway_long.mp4")
+
 while (cap.isOpened()):
     ret, frame = cap.read()
     mapx, mapy = cv2.initUndistortRectifyMap(cameraMatrix, dist, None, newCameraMatrix, (w,h), 5) #map for x and y directions for undistort function with remapping.

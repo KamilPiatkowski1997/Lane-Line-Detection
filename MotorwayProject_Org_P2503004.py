@@ -234,7 +234,6 @@ def slighting_window(combined):
 cap = cv2.VideoCapture("video/motorway_edge.mp4")
 # cap = cv2.VideoCapture("video/motorway_cut.mp4")
 # cap = cv2.VideoCapture("video/motorway_long.mp4")
-# cap = cv2.VideoCapture("video/motorway.mp4")
 
 while (cap.isOpened()):
     ret, frame = cap.read()
