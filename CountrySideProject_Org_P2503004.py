@@ -74,8 +74,8 @@ def function_of_intertest(image):
 # plt.show() 
 
 # video=cv2.VideoCapture("video/countryside_long.mp4")
-# video=cv2.VideoCapture("video/countryside_cut.mp4")
-video=cv2.VideoCapture("video/countryside_road.mp4")
+video=cv2.VideoCapture("video/countryside_cut.mp4")
+# video=cv2.VideoCapture("video/countryside_road.mp4")
 # video = cv2.VideoCapture("video/motorway_edge.mp4")
 
 
